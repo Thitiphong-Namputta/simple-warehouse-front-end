@@ -1,7 +1,7 @@
 "use client";
 
-function Home() {
+function Blog() {
   return <div></div>;
 }
 
-export default Home;
+export default Blog;
