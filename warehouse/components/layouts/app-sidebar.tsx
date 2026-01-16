@@ -2,6 +2,7 @@ import {
   ChartNoAxesCombined,
   Store,
   ClipboardList,
+  Wallet,
   Settings,
   ChevronRight,
 } from "lucide-react";
@@ -45,6 +46,12 @@ const items = [
     title: "Orders",
     url: "/warehouse/orders",
     icon: ClipboardList,
+    sub_items: [],
+  },
+  {
+    title: "Payments",
+    url: "/warehouse/transaction",
+    icon: Wallet,
     sub_items: [],
   },
   {
