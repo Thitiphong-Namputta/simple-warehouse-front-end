@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Prompt } from "next/font/google";
 import "./globals.css";
-import { NavigationMenuNavBar } from "@/components/layouts/navbar";
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/layouts/app-sidebar";
 
 const prompt = Prompt({
   variable: "--font-prompt",
@@ -22,8 +23,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${prompt.variable} antialiased`}>
-        <NavigationMenuNavBar />
-        {children}
+        <SidebarProvider>
+          <AppSidebar />
+          <SidebarInset>
+            {children}
+          </SidebarInset>
+        </SidebarProvider>
       </body>
     </html>
   );

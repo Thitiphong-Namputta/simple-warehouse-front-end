@@ -2,12 +2,12 @@
 
 import { AppHeader } from "@/components/layouts/app-header";
 
-function Warehouse() {
+function Inventory() {
   return (
     <div>
-      <AppHeader title={"Dashboard"} />
+      <AppHeader title={"Inventory"} />
     </div>
   );
 }
 
-export default Warehouse;
+export default Inventory;
