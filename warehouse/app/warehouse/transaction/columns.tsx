@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
 import { MoreHorizontal } from "lucide-react";
+import Link from "next/link";
 
 import { DataTableColumnHeader } from "@/components/data-table-column-header";
 
@@ -20,6 +21,8 @@ export type Payment = {
   amount: number;
   status: "pending" | "processing" | "success" | "failed";
   email: string;
+  created_at: Date;
+  updated_at: Date;
 };
 
 export const columns: ColumnDef<Payment>[] = [
@@ -44,6 +47,25 @@ export const columns: ColumnDef<Payment>[] = [
     ),
     enableSorting: false,
     enableHiding: false,
+  },
+  // {
+  //   accessorKey: "created_at",
+  //   header: "Created At",
+  // },
+  {
+    accessorKey: "updated_at",
+    header: "Updated At",
+    cell: ({ row }) => {
+      const date = row.getValue("updated_at") as Date;
+      const formatted = new Intl.DateTimeFormat("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+      }).format(new Date(date));
+      return <div>{formatted}</div>;
+    },
   },
   {
     accessorKey: "status",
@@ -90,7 +112,11 @@ export const columns: ColumnDef<Payment>[] = [
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
+            <DropdownMenuItem>
+              <Link href={`/warehouse/transaction/${payment.id}`}>
+                View payment details
+              </Link>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );

@@ -10,6 +10,8 @@ async function getData(): Promise<Payment[]> {
     amount: faker.number.int({ min: 50, max: 500 }),
     status: faker.helpers.arrayElement(["pending", "success", "failed"]),
     email: faker.internet.email(),
+    created_at: faker.date.past(),
+    updated_at: faker.date.recent(),
   }));
 
   return data;
