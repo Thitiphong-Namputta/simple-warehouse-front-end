@@ -1,7 +1,10 @@
 import { Suspense } from "react";
+import Link from "next/link";
 import { AppHeader } from "@/components/layouts/app-header";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 
 async function getProducts() {
   try {
@@ -18,11 +21,16 @@ export default async function Inventory() {
   return (
     <div>
       <AppHeader title={"Inventory"} />
-      <Suspense fallback={<div>Loading...</div>}>
-        <div className="mx-auto px-4 py-10">
+      <div className="mx-auto px-4 py-10">
+        <Link href="/warehouse/inventory/create">
+          <Button>
+            <Plus /> Add Product
+          </Button>
+        </Link>
+        <Suspense fallback={<div>Loading...</div>}>
           <DataTable columns={columns} data={data} />
-        </div>
-      </Suspense>
+        </Suspense>
+      </div>
     </div>
   );
 }

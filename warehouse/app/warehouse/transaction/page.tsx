@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { AppHeader } from "@/components/layouts/app-header";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
@@ -18,7 +19,9 @@ async function Transaction() {
     <div>
       <AppHeader title={"Payments"} />
       <div className="mx-auto px-4 py-10">
-        <DataTable columns={columns} data={data} />
+        <Suspense fallback={<div>Loading...</div>}>
+          <DataTable columns={columns} data={data} />
+        </Suspense>
       </div>
     </div>
   );
