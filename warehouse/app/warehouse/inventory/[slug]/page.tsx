@@ -23,8 +23,8 @@ export default async function ProductDetail({
     <div>
       <AppHeader title={"Product Details"} />
       <div className="mx-auto px-4 py-10">
-        <h1>{slug}</h1>
-        <h1>{data}</h1>
+        <h1>slug : {slug}</h1>
+        <h1>data : {data}</h1>
       </div>
     </div>
   );

@@ -1,24 +1,19 @@
 import { AppHeader } from "@/components/layouts/app-header";
-import { columns, Payment } from "./columns";
+import { columns } from "./columns";
 import { DataTable } from "./data-table";
-import { faker } from "@faker-js/faker";
 
-async function getData(): Promise<Payment[]> {
-  // Fetch data from your API here.
-  const data = Array.from({ length: 34 }).map(() => ({
-    id: faker.string.uuid(),
-    amount: faker.number.int({ min: 50, max: 500 }),
-    status: faker.helpers.arrayElement(["pending", "success", "failed"]),
-    email: faker.internet.email(),
-    created_at: faker.date.past(),
-    updated_at: faker.date.recent(),
-  }));
-
-  return data;
+async function getTransaction() {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/transaction`);
+    const json = await res.json();
+    return json.data.results;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
 }
 
 async function Transaction() {
-  const data = await getData();
+  const data = await getTransaction();
   return (
     <div>
       <AppHeader title={"Payments"} />
