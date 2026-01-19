@@ -18,7 +18,7 @@ export type Product = {
   id: string;
   name: string;
   price: number;
-  status: "stock" | "out of stock";
+  stock: number;
   created_at: Date;
   updated_at: Date;
 };
@@ -70,8 +70,8 @@ export const columns: ColumnDef<Product>[] = [
     header: "Name",
   },
   {
-    accessorKey: "status",
-    header: "Status",
+    accessorKey: "stock",
+    header: "Stock",
   },
   {
     accessorKey: "price",

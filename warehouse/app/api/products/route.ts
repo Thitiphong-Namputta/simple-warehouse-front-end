@@ -6,7 +6,7 @@ export async function GET() {
     id: faker.string.uuid(),
     name: faker.commerce.product(),
     price: parseFloat(faker.commerce.price()),
-    status: faker.helpers.arrayElement(["stock", "out of stock"]),
+    stock: faker.number.int({ min: 0, max: 200 }),
     created_at: faker.date.past(),
     updated_at: faker.date.recent(),
   }));

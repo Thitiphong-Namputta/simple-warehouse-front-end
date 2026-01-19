@@ -11,7 +11,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
-import { MoreHorizontal } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import {
+  MoreHorizontal,
+  CircleCheck,
+  Loader,
+  PackageSearch,
+  CircleX,
+} from "lucide-react";
 import Link from "next/link";
 
 import { DataTableColumnHeader } from "@/components/data-table-column-header";
@@ -68,13 +75,27 @@ export const columns: ColumnDef<Payment>[] = [
     },
   },
   {
-    accessorKey: "status",
-    header: "Status",
-  },
-  {
     accessorKey: "email",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Email" />
+    ),
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => (
+      <Badge variant="outline" className="text-muted-foreground px-1.5">
+        {row.original.status === "success" ? (
+          <CircleCheck className="fill-green-500 dark:fill-green-400" />
+        ) : row.original.status === "pending" ? (
+          <Loader className="fill-yellow-500 dark:fill-yellow-400" />
+        ) : row.original.status === "processing" ? (
+          <PackageSearch className="fill-blue-500 dark:fill-blue-400" />
+        ) : (
+          <CircleX className="fill-red-500 dark:fill-red-400" />
+        )}
+        {row.original.status}
+      </Badge>
     ),
   },
   {
