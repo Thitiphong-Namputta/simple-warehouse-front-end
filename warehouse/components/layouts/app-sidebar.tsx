@@ -1,3 +1,4 @@
+import Link from "next/link";
 import {
   ChartNoAxesCombined,
   Store,
@@ -5,6 +6,7 @@ import {
   Wallet,
   Settings,
   ChevronRight,
+  Warehouse,
 } from "lucide-react";
 import {
   Collapsible,
@@ -26,7 +28,7 @@ import {
   SidebarFooter,
   SidebarHeader,
 } from "@/components/ui/sidebar";
-import Link from "next/link";
+import { AppUser } from "./app-user";
 
 // Menu items.
 const items = [
@@ -74,7 +76,18 @@ const items = [
 export function AppSidebar() {
   return (
     <Sidebar>
-      <SidebarHeader>Head</SidebarHeader>
+      <SidebarHeader>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild>
+              <Link href="/">
+                <Warehouse />
+                <span className="text-base font-semibold">Warehouse co.</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Application</SidebarGroupLabel>
@@ -123,7 +136,15 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter>Foot</SidebarFooter>
+      <SidebarFooter>
+        <AppUser
+          user={{
+            name: "John Doe",
+            email: "John@mail.com",
+            avatar: "/avatar.jpg",
+          }}
+        />
+      </SidebarFooter>
     </Sidebar>
   );
 }
