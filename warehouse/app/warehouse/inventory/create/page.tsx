@@ -1,3 +1,5 @@
+"use client";
+
 import { AppHeader } from "@/components/layouts/app-header";
 import {
   Breadcrumb,
@@ -9,7 +11,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { ProductForm } from "../form";
 
-export default function createProduct() {
+export default function CreateProduct() {
   return (
     <div>
       <AppHeader title={"Add Product"} />

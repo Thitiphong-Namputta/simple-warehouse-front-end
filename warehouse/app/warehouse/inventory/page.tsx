@@ -1,3 +1,7 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import axios from "axios";
 import { Suspense } from "react";
 import Link from "next/link";
 import { AppHeader } from "@/components/layouts/app-header";
@@ -14,19 +18,33 @@ import { Plus } from "lucide-react";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import { SectionCards } from "./section-cards";
+import { AddProductDialog } from "@/components/products/add-product-dialog";
 
-async function getProducts() {
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products`);
-    const json = await res.json();
-    return json.data.results;
-  } catch (error) {
-    console.error("Error fetching data:", error);
-  }
-}
+export default function Inventory() {
+  const [products, setProducts] = useState([]);
+  const [openDialog, setOpenDialog] = useState(false);
 
-export default async function Inventory() {
-  const data = await getProducts();
+  const getProducts = async () => {
+    await axios
+      .get(`${process.env.NEXT_PUBLIC_API_URL}/products`)
+      .then(async (response) => {
+        if (response.data) {
+          console.log(response);
+          setProducts(response.data.results);
+        }
+      })
+      .catch((error) => {
+        console.log("Get products fail : ", error);
+        setProducts([]);
+      });
+  };
+
+  useEffect(() => {
+    getProducts();
+  }, []);
+
+  const handleUpload = () => {};
+
   return (
     <div>
       <AppHeader title={"Inventory"} />
@@ -54,8 +72,16 @@ export default async function Inventory() {
             <Plus /> ADD PRODUCT
           </Button>
         </Link>
+        <Button className="ms-2" onClick={() => setOpenDialog(true)}>
+          <Plus /> ADD PRODUCT DAILOG
+        </Button>
+        <AddProductDialog
+          open={openDialog}
+          onOpenChange={setOpenDialog}
+          onUpload={handleUpload}
+        />
         <Suspense fallback={<div>Loading...</div>}>
-          <DataTable columns={columns} data={data} />
+          <DataTable columns={columns} data={products} />
         </Suspense>
       </div>
     </div>

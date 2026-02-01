@@ -11,9 +11,5 @@ export async function GET() {
     updated_at: faker.date.recent(),
   }));
 
-  const data = { count: count, results: results };
-
-  return Response.json({
-    data,
-  });
+  return Response.json({ count: count, results: results });
 }
