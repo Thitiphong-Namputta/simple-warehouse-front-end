@@ -63,11 +63,11 @@ const items = [
     sub_items: [
       {
         title: "History",
-        url: "#",
+        url: "/warehouse/settings/history",
       },
       {
         title: "Advanced",
-        url: "#",
+        url: "/warehouse/settings/advanced",
       },
     ],
   },
