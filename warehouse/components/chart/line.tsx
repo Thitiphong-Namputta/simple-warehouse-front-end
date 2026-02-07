@@ -25,40 +25,54 @@ ChartJS.register(
 
 export const options = {
   responsive: true,
+  maintainAspectRatio: false,
   plugins: {
     legend: {
       position: "top" as const,
     },
     title: {
       display: true,
-      text: "Chart.js Line Chart",
+      text: "Monthly Sales Trends",
     },
   },
+  scales: {
+    y: {
+      beginAtZero: true,
+      ticks: {
+        callback: function(value: number | string) {
+          return '$' + value;
+        }
+      }
+    }
+  }
 };
 
-const labels = ["January", "February", "March", "April", "May", "June", "July"];
+const labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 export const data = {
   labels,
   datasets: [
     {
-      label: "Dataset 1",
-      data: labels.map(() => faker.number.int({ min: -1000, max: 1000 })),
-      borderColor: "rgb(255, 99, 132)",
-      backgroundColor: "rgba(255, 99, 132, 0.5)",
+      label: "Sales Revenue",
+      data: labels.map(() => faker.number.int({ min: 15000, max: 45000 })),
+      borderColor: "rgb(99, 102, 241)",
+      backgroundColor: "rgba(99, 102, 241, 0.5)",
+      tension: 0.4,
     },
     {
-      label: "Dataset 2",
-      data: labels.map(() => faker.number.int({ min: -1000, max: 1000 })),
-      borderColor: "rgb(53, 162, 235)",
-      backgroundColor: "rgba(53, 162, 235, 0.5)",
+      label: "Target Revenue",
+      data: labels.map(() => faker.number.int({ min: 20000, max: 40000 })),
+      borderColor: "rgb(34, 197, 94)",
+      backgroundColor: "rgba(34, 197, 94, 0.5)",
+      tension: 0.4,
+      borderDash: [5, 5],
     },
   ],
 };
 
 export function LineChart() {
   return (
-    <div className="w-md">
+    <div className="w-full h-80">
       <Line options={options} data={data} />
     </div>
   );

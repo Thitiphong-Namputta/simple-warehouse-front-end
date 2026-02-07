@@ -6,49 +6,50 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 
 export const options = {
   responsive: true,
+  maintainAspectRatio: false,
   plugins: {
     legend: {
-      position: "top" as const,
+      position: "right" as const,
     },
     title: {
       display: true,
-      text: "Chart.js Doughnut Chart",
+      text: "Order Status Distribution",
     },
   },
 };
 
-const labels = ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"];
+const labels = ["Delivered", "Shipped", "Processing", "Pending", "Confirmed", "Cancelled"];
 
 export const data = {
   labels: labels,
   datasets: [
     {
-      label: "# of Votes",
-      data: labels.map(() => faker.number.int({ min: 0, max: 30 })),
+      label: "Orders",
+      data: labels.map(() => faker.number.int({ min: 10, max: 100 })),
       backgroundColor: [
-        "rgba(255, 99, 132, 0.2)",
-        "rgba(54, 162, 235, 0.2)",
-        "rgba(255, 206, 86, 0.2)",
-        "rgba(75, 192, 192, 0.2)",
-        "rgba(153, 102, 255, 0.2)",
-        "rgba(255, 159, 64, 0.2)",
+        "rgba(34, 197, 94, 0.8)",
+        "rgba(168, 85, 247, 0.8)",
+        "rgba(99, 102, 241, 0.8)",
+        "rgba(251, 191, 36, 0.8)",
+        "rgba(59, 130, 246, 0.8)",
+        "rgba(239, 68, 68, 0.8)",
       ],
       borderColor: [
-        "rgba(255, 99, 132, 1)",
-        "rgba(54, 162, 235, 1)",
-        "rgba(255, 206, 86, 1)",
-        "rgba(75, 192, 192, 1)",
-        "rgba(153, 102, 255, 1)",
-        "rgba(255, 159, 64, 1)",
+        "rgba(34, 197, 94, 1)",
+        "rgba(168, 85, 247, 1)",
+        "rgba(99, 102, 241, 1)",
+        "rgba(251, 191, 36, 1)",
+        "rgba(59, 130, 246, 1)",
+        "rgba(239, 68, 68, 1)",
       ],
-      borderWidth: 1,
+      borderWidth: 2,
     },
   ],
 };
 
 export function DoughnutChart() {
   return (
-    <div className="w-md">
+    <div className="w-full h-80">
       <Doughnut options={options} data={data} />
     </div>
   );

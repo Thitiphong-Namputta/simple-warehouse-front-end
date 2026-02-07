@@ -25,35 +25,42 @@ ChartJS.register(
 
 export const options = {
   responsive: true,
+  maintainAspectRatio: false,
   plugins: {
     legend: {
       position: "top" as const,
     },
     title: {
       display: true,
-      text: "Chart.js Area Chart",
+      text: "Inventory Levels Over Time",
     },
   },
+  scales: {
+    y: {
+      beginAtZero: true,
+    }
+  }
 };
 
-const labels = ["January", "February", "March", "April", "May", "June", "July"];
+const labels = ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5", "Week 6"];
 
 export const data = {
   labels,
   datasets: [
     {
       fill: true,
-      label: "Dataset 2",
-      data: labels.map(() => faker.number.int({ min: 0, max: 1000 })),
-      borderColor: "rgb(53, 162, 235)",
-      backgroundColor: "rgba(53, 162, 235, 0.5)",
+      label: "Stock Level",
+      data: labels.map(() => faker.number.int({ min: 500, max: 2000 })),
+      borderColor: "rgb(168, 85, 247)",
+      backgroundColor: "rgba(168, 85, 247, 0.3)",
+      tension: 0.4,
     },
   ],
 };
 
 export function AreaChart() {
   return (
-    <div className="w-md">
+    <div className="w-full h-80">
       <Line options={options} data={data} />
     </div>
   );

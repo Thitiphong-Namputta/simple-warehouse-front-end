@@ -21,38 +21,41 @@ ChartJS.register(
 
 export const options = {
   responsive: true,
+  maintainAspectRatio: false,
   plugins: {
     legend: {
       position: "top" as const,
     },
     title: {
       display: true,
-      text: "Chart.js Bar Chart",
+      text: "Top Selling Products",
     },
   },
+  scales: {
+    y: {
+      beginAtZero: true,
+    }
+  }
 };
 
-const labels = ["January", "February", "March", "April", "May", "June", "July"];
+const labels = ["Product A", "Product B", "Product C", "Product D", "Product E", "Product F"];
 
 export const data = {
   labels,
   datasets: [
     {
-      label: "Dataset 1",
-      data: labels.map(() => faker.number.int({ min: 0, max: 1000 })),
-      backgroundColor: "rgba(255, 99, 132, 0.5)",
-    },
-    {
-      label: "Dataset 2",
-      data: labels.map(() => faker.number.int({ min: 0, max: 1000 })),
-      backgroundColor: "rgba(53, 162, 235, 0.5)",
+      label: "Units Sold",
+      data: labels.map(() => faker.number.int({ min: 100, max: 800 })),
+      backgroundColor: "rgba(59, 130, 246, 0.8)",
+      borderColor: "rgba(59, 130, 246, 1)",
+      borderWidth: 1,
     },
   ],
 };
 
 export function BarChart() {
   return (
-    <div className="w-md">
+    <div className="w-full h-80">
       <Bar options={options} data={data} />
     </div>
   );
