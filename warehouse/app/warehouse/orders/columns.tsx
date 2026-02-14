@@ -24,6 +24,7 @@ import {
 import Link from "next/link";
 
 import { DataTableColumnHeader } from "@/components/data-table-column-header";
+import { formatDateTime } from "@/lib/utils";
 
 export type Order = {
   id: string;
@@ -107,17 +108,9 @@ export const columns: ColumnDef<Order>[] = [
   },
   {
     accessorKey: "updated_at",
-    header: "Updated At",
+    header: "Updated Date",
     cell: ({ row }) => {
-      const date = row.getValue("updated_at") as Date;
-      const formatted = new Intl.DateTimeFormat("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-      }).format(new Date(date));
-      return <div>{formatted}</div>;
+      return <div>{formatDateTime(row.getValue("updated_at"))}</div>;
     },
   },
   {

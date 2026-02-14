@@ -18,15 +18,21 @@ import {
   Loader,
   PackageSearch,
   CircleX,
+  Banknote,
+  CreditCard,
+  Landmark,
+  QrCode,
 } from "lucide-react";
 import Link from "next/link";
 
 import { DataTableColumnHeader } from "@/components/data-table-column-header";
+import { formatDateTime } from "@/lib/utils";
 
 export type Payment = {
   id: string;
   amount: number;
   status: "pending" | "processing" | "success" | "failed";
+  payment_method: "cash" | "credit_card" | "bank_transfer" | "promptpay";
   email: string;
   created_at: Date;
   updated_at: Date;
@@ -55,25 +61,6 @@ export const columns: ColumnDef<Payment>[] = [
     enableSorting: false,
     enableHiding: false,
   },
-  // {
-  //   accessorKey: "created_at",
-  //   header: "Created At",
-  // },
-  {
-    accessorKey: "updated_at",
-    header: "Updated At",
-    cell: ({ row }) => {
-      const date = row.getValue("updated_at") as Date;
-      const formatted = new Intl.DateTimeFormat("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-      }).format(new Date(date));
-      return <div>{formatted}</div>;
-    },
-  },
   {
     accessorKey: "email",
     header: ({ column }) => (
@@ -99,6 +86,42 @@ export const columns: ColumnDef<Payment>[] = [
     ),
   },
   {
+    accessorKey: "payment_method",
+    header: "Payment Method",
+    cell: ({ row }) => {
+      const method = row.original.payment_method;
+      const config = {
+        cash: {
+          icon: Banknote,
+          label: "Cash",
+          color: "text-green-600 dark:text-green-400",
+        },
+        credit_card: {
+          icon: CreditCard,
+          label: "Credit Card",
+          color: "text-blue-600 dark:text-blue-400",
+        },
+        bank_transfer: {
+          icon: Landmark,
+          label: "Bank Transfer",
+          color: "text-purple-600 dark:text-purple-400",
+        },
+        promptpay: {
+          icon: QrCode,
+          label: "PromptPay",
+          color: "text-orange-600 dark:text-orange-400",
+        },
+      }[method];
+      const Icon = config.icon;
+      return (
+        <div className="flex items-center gap-2">
+          <Icon className={`h-4 w-4 ${config.color}`} />
+          <span>{config.label}</span>
+        </div>
+      );
+    },
+  },
+  {
     accessorKey: "amount",
     header: () => <div className="text-right">Amount</div>,
     cell: ({ row }) => {
@@ -109,6 +132,13 @@ export const columns: ColumnDef<Payment>[] = [
       }).format(amount);
 
       return <div className="text-right font-medium">{formatted}</div>;
+    },
+  },
+  {
+    accessorKey: "updated_at",
+    header: "Updated Date",
+    cell: ({ row }) => {
+      return <div>{formatDateTime(row.getValue("updated_at"))}</div>;
     },
   },
   {

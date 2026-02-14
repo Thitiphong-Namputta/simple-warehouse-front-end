@@ -13,6 +13,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { MoreHorizontal } from "lucide-react";
 import Link from "next/link";
+import { formatDateTime } from "@/lib/utils";
 
 export type Product = {
   id: string;
@@ -46,25 +47,6 @@ export const columns: ColumnDef<Product>[] = [
     enableSorting: false,
     enableHiding: false,
   },
-  // {
-  //   accessorKey: "created_at",
-  //   header: "Created At",
-  // },
-  {
-    accessorKey: "updated_at",
-    header: "Updated At",
-    cell: ({ row }) => {
-      const date = row.getValue("updated_at") as Date;
-      const formatted = new Intl.DateTimeFormat("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-      }).format(new Date(date));
-      return <div>{formatted}</div>;
-    },
-  },
   {
     accessorKey: "name",
     header: "Name",
@@ -84,6 +66,13 @@ export const columns: ColumnDef<Product>[] = [
       }).format(price);
 
       return <div className="text-right font-medium">{formatted}</div>;
+    },
+  },
+  {
+    accessorKey: "updated_at",
+    header: "Updated Date",
+    cell: ({ row }) => {
+      return <div>{formatDateTime(row.getValue("updated_at"))}</div>;
     },
   },
   {

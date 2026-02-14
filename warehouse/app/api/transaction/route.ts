@@ -6,6 +6,12 @@ export async function GET() {
     id: faker.string.uuid(),
     amount: faker.number.int({ min: 50, max: 500 }),
     status: faker.helpers.arrayElement(["pending", "success", "failed"]),
+    payment_method: faker.helpers.arrayElement([
+      "cash",
+      "credit_card",
+      "bank_transfer",
+      "promptpay",
+    ]),
     email: faker.internet.email(),
     created_at: faker.date.past(),
     updated_at: faker.date.recent(),
