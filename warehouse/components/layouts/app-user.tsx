@@ -1,5 +1,6 @@
 "use client";
 
+import { signOut } from "next-auth/react";
 import {
   CreditCard,
   EllipsisVertical,
@@ -94,7 +95,7 @@ export function AppUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/auth/login" })}>
               <LogOut />
               Log out
             </DropdownMenuItem>

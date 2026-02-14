@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { auth } from "@/auth";
 import {
   ChartNoAxesCombined,
   Store,
@@ -73,7 +74,9 @@ const items = [
   },
 ];
 
-export function AppSidebar() {
+export async function AppSidebar() {
+  const session = await auth();
+
   return (
     <Sidebar>
       <SidebarHeader>
@@ -139,9 +142,9 @@ export function AppSidebar() {
       <SidebarFooter>
         <AppUser
           user={{
-            name: "John Doe",
-            email: "John@mail.com",
-            avatar: "/avatar.jpg",
+            name: session?.user?.name ?? "Unknown",
+            email: session?.user?.email ?? "",
+            avatar: session?.user?.image ?? "/avatar.jpg",
           }}
         />
       </SidebarFooter>
