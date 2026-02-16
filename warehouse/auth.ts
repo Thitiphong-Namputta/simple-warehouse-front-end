@@ -10,23 +10,37 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        // Hardcoded user for phase 1 — replace with DB lookup later
-        const validEmail = "admin@warehouse.com";
-        const validPassword = "password123";
+        const { email, password } = credentials as {
+          email: string;
+          password: string;
+        };
 
-        if (
-          credentials?.email === validEmail &&
-          credentials?.password === validPassword
-        ) {
+        try {
+          const res = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/auth/sign-in`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email, password }),
+            }
+          );
+
+          const data = await res.json();
+
+          if (!res.ok || !data.success) {
+            return null;
+          }
+
           return {
-            id: "1",
-            name: "Admin User",
-            email: validEmail,
-            image: "/avatar.jpg",
+            id: data.data.user._id,
+            name: data.data.user.name,
+            email: data.data.user.email,
+            accessToken: data.data.token,
           };
+        } catch (error) {
+          console.error("Auth error:", error);
+          return null;
         }
-
-        return null;
       },
     }),
   ],
@@ -37,12 +51,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.accessToken = user.accessToken;
       }
       return token;
     },
     async session({ session, token }) {
       if (token?.id) {
         session.user.id = token.id as string;
+      }
+      if (token?.accessToken) {
+        session.accessToken = token.accessToken as string;
       }
       return session;
     },

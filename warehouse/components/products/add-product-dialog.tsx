@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useRef, useState } from "react";
-import { Upload, FileText, Loader2, X } from "lucide-react";
-import { useForm } from "react-hook-form";
+import React, { useState, useEffect } from "react";
+import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useSession } from "next-auth/react";
+import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -17,33 +18,35 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   createProductSchema,
   type CreateProductInput,
 } from "@/lib/schemas/products";
 
-interface UploadDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onUpload: (data: { name: string; description: string; file: File }) => void;
+interface Category {
+  _id: string;
+  name: string;
 }
 
-function formatFileSize(bytes: number): string {
-  if (bytes === 0) return "0 Bytes";
-  const k = 1024;
-  const sizes = ["Bytes", "KB", "MB", "GB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+interface AddProductDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSuccess?: () => void;
 }
 
 export function AddProductDialog({
   open,
   onOpenChange,
-  onUpload,
-}: UploadDialogProps) {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
+  onSuccess,
+}: AddProductDialogProps) {
+  const { data: session } = useSession();
+  const [categories, setCategories] = useState<Category[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   const {
@@ -53,98 +56,61 @@ export function AddProductDialog({
     reset,
     formState: { errors, isSubmitting },
   } = useForm<CreateProductInput>({
-    resolver: zodResolver(createProductSchema),
+    resolver: zodResolver(createProductSchema) as Resolver<CreateProductInput>,
     defaultValues: {
       name: "",
+      price: 0,
+      stock: 0,
       description: "",
-      file: undefined,
+      category: "",
     },
   });
+
+  useEffect(() => {
+    if (open) {
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories`)
+        .then((res) => res.json())
+        .then((data) => setCategories(data.results || []))
+        .catch(() => setCategories([]));
+    }
+  }, [open]);
 
   const onSubmit = async (data: CreateProductInput) => {
     setError(null);
     try {
-      onUpload({
-        name: data.name,
-        description: data.description || "",
-        file: data.file,
-      });
-      reset();
-      setSelectedFile(null);
-      onOpenChange(false);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to upload document",
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/products`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session?.accessToken}`,
+          },
+          body: JSON.stringify(data),
+        }
       );
-    }
-  };
 
-  const handleFileChange = async (file: File | undefined) => {
-    if (!file) return;
+      const result = await res.json();
 
-    setError(null);
-    setIsLoading(true);
-
-    try {
-      const maxFileSizeMB = 100;
-      const fileSizeMB = file.size / (1024 * 1024);
-      if (fileSizeMB > maxFileSizeMB) {
-        setError(
-          `File size too large! Maximum allowed size is ${maxFileSizeMB} MB (Your file: ${fileSizeMB.toFixed(2)} MB)`,
-        );
+      if (!res.ok || !result.success) {
+        setError(result.message || "Failed to create product");
         return;
       }
 
-      setValue("file", file, { shouldValidate: true });
-      setSelectedFile(file);
-
-      const currentName = (document.getElementById("name") as HTMLInputElement)
-        ?.value;
-      if (!currentName) {
-        setValue("name", file.name.replace(/\.[^/.]+$/, ""));
-      }
-    } catch (err) {
-      setError("Failed to process file");
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const removeFile = () => {
-    setValue("file", undefined as unknown as File, { shouldValidate: true });
-    setSelectedFile(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
+      reset();
+      onOpenChange(false);
+      onSuccess?.();
+    } catch {
+      setError("Something went wrong. Please try again.");
     }
   };
 
   const handleClose = (isOpen: boolean) => {
     if (!isOpen) {
       reset();
-      setSelectedFile(null);
       setError(null);
     }
     onOpenChange(isOpen);
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-    const droppedFile = e.dataTransfer.files?.[0];
-    if (droppedFile) {
-      setValue("file", droppedFile, { shouldValidate: true });
-      setSelectedFile(droppedFile);
-    }
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = () => {
-    setIsDragging(false);
   };
 
   return (
@@ -153,108 +119,96 @@ export function AddProductDialog({
         <DialogHeader>
           <DialogTitle>Add New Product</DialogTitle>
           <DialogDescription>
-            create a new product to your inventory
+            Create a new product to your inventory
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-          <div
-            className={`relative flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-6 transition-colors ${
-              isDragging
-                ? "border-primary bg-primary/5"
-                : "border-muted-foreground/25 hover:border-muted-foreground/50"
-            }`}
-            onDrop={handleDrop}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-          >
-            {selectedFile ? (
-              <div className="flex items-center gap-3 rounded-md border bg-muted/50 p-3">
-                <div className="flex size-10 shrink-0 items-center justify-center rounded-md bg-background">
-                  <FileText className="size-5 text-muted-foreground" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium">
-                    {selectedFile.name}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {formatFileSize(selectedFile.size)}
-                  </p>
-                </div>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  onClick={removeFile}
-                  disabled={isSubmitting}
-                >
-                  <X className="size-4" />
-                  <span className="sr-only">Remove file</span>
-                </Button>
-              </div>
-            ) : (
-              <>
-                <Upload
-                  className="mb-2 size-8 text-muted-foreground cursor-pointer"
-                  onClick={() => fileInputRef.current?.click()}
-                />
-                <p className="mb-1 text-sm font-medium text-foreground">
-                  Drop your file here or click to browse
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Supports all file types
-                </p>
-                <Input
-                  ref={fileInputRef}
-                  type="file"
-                  className="hidden"
-                  onChange={(e) => handleFileChange(e.target.files?.[0])}
-                />
-                {errors.file && (
-                  <p className="text-sm text-destructive">
-                    {errors.file.message}
-                  </p>
-                )}
-              </>
-            )}
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="name">Product Name</Label>
-            <div className="relative">
-              <FileText className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                id="name"
-                placeholder="Enter document name..."
-                className="pl-9"
-                disabled={isSubmitting}
-                {...register("name")}
-              />
-            </div>
-            {errors.name && (
-              <p className="text-sm text-destructive">{errors.name.message}</p>
-            )}
-          </div>
-
           {error && (
             <Alert variant="destructive">
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
 
-          {isLoading && (
-            <div className="flex items-center justify-center gap-2 py-2">
-              <Loader2 className="size-4 animate-spin" />
-              <span className="text-sm text-muted-foreground">
-                Processing file...
-              </span>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="dialog-name">Product Name</Label>
+            <Input
+              id="dialog-name"
+              placeholder="Enter product name"
+              disabled={isSubmitting}
+              {...register("name")}
+            />
+            {errors.name && (
+              <p className="text-sm text-destructive">{errors.name.message}</p>
+            )}
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="dialog-price">Price</Label>
+              <Input
+                id="dialog-price"
+                type="number"
+                step="0.01"
+                min="0"
+                placeholder="0.00"
+                disabled={isSubmitting}
+                {...register("price")}
+              />
+              {errors.price && (
+                <p className="text-sm text-destructive">
+                  {errors.price.message}
+                </p>
+              )}
             </div>
-          )}
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="dialog-stock">Stock</Label>
+              <Input
+                id="dialog-stock"
+                type="number"
+                min="0"
+                placeholder="0"
+                disabled={isSubmitting}
+                {...register("stock")}
+              />
+              {errors.stock && (
+                <p className="text-sm text-destructive">
+                  {errors.stock.message}
+                </p>
+              )}
+            </div>
+          </div>
 
           <div className="flex flex-col gap-2">
-            <Label htmlFor="description">Description (optional)</Label>
+            <Label htmlFor="dialog-category">Category</Label>
+            <Select
+              onValueChange={(value) =>
+                setValue("category", value, { shouldValidate: true })
+              }
+              disabled={isSubmitting}
+            >
+              <SelectTrigger id="dialog-category">
+                <SelectValue placeholder="Select a category" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((cat) => (
+                  <SelectItem key={cat._id} value={cat._id}>
+                    {cat.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.category && (
+              <p className="text-sm text-destructive">
+                {errors.category.message}
+              </p>
+            )}
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="dialog-description">Description (optional)</Label>
             <Textarea
-              id="description"
+              id="dialog-description"
               placeholder="Add a description..."
               rows={3}
               disabled={isSubmitting}
@@ -276,11 +230,11 @@ export function AddProductDialog({
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isLoading || isSubmitting}>
+            <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? (
                 <>
                   <Loader2 className="mr-2 size-4 animate-spin" />
-                  Submitting...
+                  Saving...
                 </>
               ) : (
                 "Save"

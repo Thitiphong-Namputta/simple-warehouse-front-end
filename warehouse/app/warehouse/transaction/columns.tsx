@@ -29,11 +29,13 @@ import { DataTableColumnHeader } from "@/components/data-table-column-header";
 import { formatDateTime } from "@/lib/utils";
 
 export type Payment = {
+  _id: string;
   id: string;
   amount: number;
   status: "pending" | "processing" | "success" | "failed";
   payment_method: "cash" | "credit_card" | "bank_transfer" | "promptpay";
   email: string;
+  order: string;
   created_at: Date;
   updated_at: Date;
 };

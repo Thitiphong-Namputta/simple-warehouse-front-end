@@ -43,7 +43,16 @@ const items = [
     title: "Inventory",
     url: "/warehouse/inventory",
     icon: Store,
-    sub_items: [],
+    sub_items: [
+      {
+        title: "Products",
+        url: "/warehouse/inventory",
+      },
+      {
+        title: "Category",
+        url: "/warehouse/inventory/category",
+      },
+    ],
   },
   {
     title: "Orders",

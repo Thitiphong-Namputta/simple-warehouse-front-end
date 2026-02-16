@@ -3,16 +3,13 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Suspense } from "react";
-import Link from "next/link";
 import { AppHeader } from "@/components/layouts/app-header";
 import { Button } from "@/components/ui/button";
 import {
   Breadcrumb,
   BreadcrumbItem,
-  BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
-  BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Plus } from "lucide-react";
 import { columns } from "./columns";
@@ -43,8 +40,6 @@ export default function Inventory() {
     getProducts();
   }, []);
 
-  const handleUpload = () => {};
-
   return (
     <div>
       <AppHeader title={"Inventory"} />
@@ -54,12 +49,6 @@ export default function Inventory() {
             <BreadcrumbItem>
               <BreadcrumbPage>Products</BreadcrumbPage>
             </BreadcrumbItem>
-            <BreadcrumbSeparator className="hidden md:block" />
-            <BreadcrumbItem className="hidden md:block">
-              <BreadcrumbLink href="/warehouse/inventory/create">
-                Add Products
-              </BreadcrumbLink>
-            </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
         <div className="@container/main flex flex-1 flex-col">
@@ -67,18 +56,13 @@ export default function Inventory() {
             <SectionCards />
           </div>
         </div>
-        <Link href="/warehouse/inventory/create">
-          <Button>
-            <Plus /> ADD PRODUCT
-          </Button>
-        </Link>
         <Button className="ms-2" onClick={() => setOpenDialog(true)}>
-          <Plus /> ADD PRODUCT DAILOG
+          <Plus /> ADD PRODUCT
         </Button>
         <AddProductDialog
           open={openDialog}
           onOpenChange={setOpenDialog}
-          onUpload={handleUpload}
+          onSuccess={getProducts}
         />
         <Suspense fallback={<div>Loading...</div>}>
           <DataTable columns={columns} data={products} />

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { registerSchema, type RegisterInput } from "@/lib/schemas/auth";
@@ -28,6 +29,7 @@ import Link from "next/link";
 export function RegisterForm() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const form = useForm<RegisterInput>({
     resolver: zodResolver(registerSchema),
@@ -36,11 +38,51 @@ export function RegisterForm() {
 
   async function onSubmit(data: RegisterInput) {
     setIsLoading(true);
-    // TODO: POST to registration API when backend is available
-    console.log("Register data:", data);
-    toast.success("Registration successful! Please sign in.");
-    setIsLoading(false);
-    router.push("/auth/login");
+    setError(null);
+
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/sign-up`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: data.name,
+            email: data.email,
+            password: data.password,
+          }),
+        }
+      );
+
+      const result = await res.json();
+
+      if (!res.ok || !result.success) {
+        setError(result.message || "Registration failed");
+        setIsLoading(false);
+        return;
+      }
+
+      toast.success("Account created successfully!");
+
+      const signInResult = await signIn("credentials", {
+        email: data.email,
+        password: data.password,
+        redirect: false,
+      });
+
+      setIsLoading(false);
+
+      if (signInResult?.error) {
+        router.push("/auth/login");
+        return;
+      }
+
+      router.push("/warehouse");
+      router.refresh();
+    } catch {
+      setError("Something went wrong. Please try again.");
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -55,6 +97,11 @@ export function RegisterForm() {
         </CardDescription>
       </CardHeader>
       <CardContent>
+        {error && (
+          <div className="mb-4 rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+            {error}
+          </div>
+        )}
         <form id="register-form" onSubmit={form.handleSubmit(onSubmit)}>
           <FieldGroup>
             <Controller

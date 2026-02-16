@@ -12,25 +12,18 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
 import { MoreHorizontal } from "lucide-react";
-import Link from "next/link";
 import { formatDateTime } from "@/lib/utils";
 
-export type Product = {
+export type Category = {
   _id: string;
   id: string;
   name: string;
-  price: number;
-  stock: number;
   description?: string;
-  category: {
-    _id: string;
-    name: string;
-  };
   created_at: Date;
   updated_at: Date;
 };
 
-export const columns: ColumnDef<Product>[] = [
+export const columns: ColumnDef<Category>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -58,20 +51,11 @@ export const columns: ColumnDef<Product>[] = [
     header: "Name",
   },
   {
-    accessorKey: "stock",
-    header: "Stock",
-  },
-  {
-    accessorKey: "price",
-    header: () => <div className="text-right">Price</div>,
+    accessorKey: "description",
+    header: "Description",
     cell: ({ row }) => {
-      const price = parseFloat(row.getValue("price"));
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(price);
-
-      return <div className="text-right font-medium">{formatted}</div>;
+      const desc = row.getValue("description") as string | undefined;
+      return <div className="text-muted-foreground">{desc ?? "-"}</div>;
     },
   },
   {
@@ -84,7 +68,7 @@ export const columns: ColumnDef<Product>[] = [
   {
     id: "actions",
     cell: ({ row }) => {
-      const product = row.original;
+      const category = row.original;
 
       return (
         <DropdownMenu>
@@ -97,16 +81,12 @@ export const columns: ColumnDef<Product>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(product.id)}
+              onClick={() => navigator.clipboard.writeText(category.id)}
             >
-              Copy product ID
+              Copy category ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <Link href={`/warehouse/inventory/${product.id}`}>
-                View product details
-              </Link>
-            </DropdownMenuItem>
+            <DropdownMenuItem>View category details</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );

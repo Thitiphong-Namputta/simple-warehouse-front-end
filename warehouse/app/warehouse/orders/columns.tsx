@@ -27,11 +27,17 @@ import { DataTableColumnHeader } from "@/components/data-table-column-header";
 import { formatDateTime } from "@/lib/utils";
 
 export type Order = {
+  _id: string;
   id: string;
   order_number: string;
   customer_name: string;
   total_amount: number;
   status: "pending" | "confirmed" | "processing" | "shipped" | "delivered" | "cancelled";
+  items?: {
+    product: { _id: string; name: string; price: number };
+    quantity: number;
+    unit_price: number;
+  }[];
   created_at: Date;
   updated_at: Date;
 };

@@ -7,60 +7,68 @@ import { Button } from "@/components/ui/button";
 import {
   Breadcrumb,
   BreadcrumbItem,
+  BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
+  BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Plus } from "lucide-react";
 import { columns } from "./columns";
-import { DataTable } from "./data-table";
-import { AddOrderDialog } from "@/components/orders/add-order-dialog";
+import { DataTable } from "../data-table";
+import { AddCategoryDialog } from "@/components/products/add-category-dialog";
 
-export default function Orders() {
-  const [orders, setOrders] = useState([]);
+export default function CategoryPage() {
+  const [categories, setCategories] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
 
-  const getOrders = async () => {
+  const getCategories = async () => {
     await axios
-      .get(`${process.env.NEXT_PUBLIC_API_URL}/orders`)
+      .get(`${process.env.NEXT_PUBLIC_API_URL}/categories`)
       .then((response) => {
         if (response.data) {
-          setOrders(response.data.results);
+          setCategories(response.data.results);
         }
       })
       .catch((error) => {
-        console.log("Get orders fail : ", error);
-        setOrders([]);
+        console.log("Get categories fail : ", error);
+        setCategories([]);
       });
   };
 
   useEffect(() => {
-    getOrders();
+    getCategories();
   }, []);
 
   return (
     <div>
-      <AppHeader title={"Orders"} />
+      <AppHeader title={"Category"} />
       <div className="mx-auto px-4 py-4">
         <Breadcrumb className="pb-4">
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbPage>Orders</BreadcrumbPage>
+              <BreadcrumbLink href="/warehouse/inventory">
+                Products
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Category</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
 
         <Button onClick={() => setOpenDialog(true)}>
-          <Plus /> ADD ORDER
+          <Plus /> ADD CATEGORY
         </Button>
 
-        <AddOrderDialog
+        <AddCategoryDialog
           open={openDialog}
           onOpenChange={setOpenDialog}
-          onSuccess={getOrders}
+          onSuccess={getCategories}
         />
 
         <Suspense fallback={<div>Loading...</div>}>
-          <DataTable columns={columns} data={orders} />
+          <DataTable columns={columns} data={categories} />
         </Suspense>
       </div>
     </div>
