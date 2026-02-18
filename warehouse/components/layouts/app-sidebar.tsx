@@ -14,7 +14,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { AppUser } from "./app-user";
-import { AppSidebarNav } from "./app-sidebar-nav";
+import { AppSidebarNavClient } from "./app-sidebar-nav-client";
 
 export async function AppSidebar() {
   const session = await auth();
@@ -37,7 +37,7 @@ export async function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
-            <AppSidebarNav />
+            <AppSidebarNavClient />
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>

@@ -97,13 +97,13 @@ export const columns: ColumnDef<Product>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(product.id)}
+              onClick={() => navigator.clipboard.writeText(product._id)}
             >
               Copy product ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <Link href={`/warehouse/inventory/${product.id}`}>
+              <Link href={`/warehouse/inventory/${product._id}`}>
                 View product details
               </Link>
             </DropdownMenuItem>

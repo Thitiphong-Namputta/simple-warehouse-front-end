@@ -5,9 +5,9 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> },
 ) {
   const id = (await params).id;
-  // e.g. Query a database for product with ID `id`
 
-  return Response.json({
-    id: id,
-  });
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products/${id}`);
+  const data = await res.json();
+
+  return Response.json(data, { status: res.status });
 }
