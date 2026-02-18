@@ -2,11 +2,13 @@
 
 import Link from "next/link";
 import { useTheme } from "next-themes";
-import { Warehouse, Sun, Moon } from "lucide-react";
+import { Warehouse, Sun, Moon, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useSession } from "next-auth/react";
 
 export function Navbar() {
   const { theme, setTheme } = useTheme();
+  const { data: session } = useSession();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-sm">
@@ -47,12 +49,23 @@ export function Navbar() {
             <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
             <span className="sr-only">Toggle theme</span>
           </Button>
-          <Button variant="outline" size="sm" asChild>
-            <Link href="/auth/login">Sign In</Link>
-          </Button>
-          <Button size="sm" asChild>
-            <Link href="/auth/register">Try Free</Link>
-          </Button>
+          {session ? (
+            <Button size="sm" asChild>
+              <Link href="/warehouse/inventory">
+                <LayoutDashboard className="mr-1.5 h-4 w-4" />
+                Dashboard
+              </Link>
+            </Button>
+          ) : (
+            <>
+              <Button variant="outline" size="sm" asChild>
+                <Link href="/auth/login">Sign In</Link>
+              </Button>
+              <Button size="sm" asChild>
+                <Link href="/auth/register">Try Free</Link>
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </header>

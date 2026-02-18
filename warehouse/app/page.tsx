@@ -8,6 +8,7 @@ import {
   Zap,
   ArrowRight,
   CheckCircle2,
+  LayoutDashboard,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,6 +20,7 @@ import {
 } from "@/components/ui/card";
 import { Navbar } from "@/components/landing/navbar";
 import { Footer } from "@/components/landing/footer";
+import { auth } from "@/auth";
 
 const features = [
   {
@@ -66,7 +68,9 @@ const stats = [
   { value: "150+", label: "Countries" },
 ];
 
-export default function Home() {
+export default async function Home() {
+  const session = await auth();
+
   return (
     <div className="flex min-h-screen flex-col">
       <Navbar />
@@ -90,15 +94,26 @@ export default function Home() {
                 place.
               </p>
               <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-                <Button size="lg" asChild>
-                  <Link href="/auth/register">
-                    Get Started Free
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Link>
-                </Button>
-                <Button variant="outline" size="lg" asChild>
-                  <Link href="/auth/login">Sign In</Link>
-                </Button>
+                {session ? (
+                  <Button size="lg" asChild>
+                    <Link href="/warehouse/inventory">
+                      <LayoutDashboard className="mr-2 h-4 w-4" />
+                      Go to Dashboard
+                    </Link>
+                  </Button>
+                ) : (
+                  <>
+                    <Button size="lg" asChild>
+                      <Link href="/auth/register">
+                        Get Started Free
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
+                    </Button>
+                    <Button variant="outline" size="lg" asChild>
+                      <Link href="/auth/login">Sign In</Link>
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -210,26 +225,33 @@ export default function Home() {
                 streamline their operations. Start for free today.
               </p>
               <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
-                <Button
-                  size="lg"
-                  variant="secondary"
-                  asChild
-                >
-                  <Link href="/auth/register">
-                    Start Free Trial
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Link>
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/10"
-                  asChild
-                >
-                  <Link href="mailto:support@warehouse-co.com">
-                    Contact Sales
-                  </Link>
-                </Button>
+                {session ? (
+                  <Button size="lg" variant="secondary" asChild>
+                    <Link href="/warehouse/inventory">
+                      <LayoutDashboard className="mr-2 h-4 w-4" />
+                      Go to Dashboard
+                    </Link>
+                  </Button>
+                ) : (
+                  <>
+                    <Button size="lg" variant="secondary" asChild>
+                      <Link href="/auth/register">
+                        Start Free Trial
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
+                    </Button>
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/10"
+                      asChild
+                    >
+                      <Link href="mailto:support@warehouse-co.com">
+                        Contact Sales
+                      </Link>
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
           </div>
