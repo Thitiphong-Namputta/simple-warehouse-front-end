@@ -8,8 +8,10 @@ import { Button } from "@/components/ui/button";
 import {
   Breadcrumb,
   BreadcrumbItem,
+  BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
+  BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Plus } from "lucide-react";
 import { columns } from "./columns";
@@ -48,6 +50,10 @@ export default function Inventory() {
           <BreadcrumbList>
             <BreadcrumbItem>
               <BreadcrumbPage>Products</BreadcrumbPage>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/warehouse/inventory/summary">Summary</BreadcrumbLink>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>

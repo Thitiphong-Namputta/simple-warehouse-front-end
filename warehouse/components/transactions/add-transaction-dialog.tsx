@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSession } from "next-auth/react";
-import { Loader2 } from "lucide-react";
+import { Loader2, Banknote, CreditCard, Landmark, QrCode } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -42,10 +42,10 @@ interface AddTransactionDialogProps {
 }
 
 const PAYMENT_METHODS = [
-  { value: "cash", label: "Cash" },
-  { value: "credit_card", label: "Credit Card" },
-  { value: "bank_transfer", label: "Bank Transfer" },
-  { value: "promptpay", label: "PromptPay" },
+  { value: "cash", label: "Cash", icon: Banknote },
+  { value: "credit_card", label: "Credit Card", icon: CreditCard },
+  { value: "bank_transfer", label: "Bank Transfer", icon: Landmark },
+  { value: "promptpay", label: "PromptPay", icon: QrCode },
 ] as const;
 
 const TRANSACTION_STATUSES = [
@@ -215,7 +215,10 @@ export function AddTransactionDialog({
               <SelectContent>
                 {PAYMENT_METHODS.map((m) => (
                   <SelectItem key={m.value} value={m.value}>
-                    {m.label}
+                    <span className="flex items-center gap-2">
+                      <m.icon className="size-4 shrink-0" />
+                      {m.label}
+                    </span>
                   </SelectItem>
                 ))}
               </SelectContent>

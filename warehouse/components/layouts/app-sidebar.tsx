@@ -1,87 +1,20 @@
 import Link from "next/link";
 import { auth } from "@/auth";
-import {
-  ChartNoAxesCombined,
-  Store,
-  ClipboardList,
-  Wallet,
-  Settings,
-  ChevronRight,
-  Warehouse,
-} from "lucide-react";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import { Warehouse } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
+  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
-  SidebarFooter,
-  SidebarHeader,
 } from "@/components/ui/sidebar";
 import { AppUser } from "./app-user";
-
-// Menu items.
-const items = [
-  {
-    title: "Dashboard",
-    url: "/warehouse",
-    icon: ChartNoAxesCombined,
-    sub_items: [],
-  },
-  {
-    title: "Inventory",
-    url: "/warehouse/inventory",
-    icon: Store,
-    sub_items: [
-      {
-        title: "Products",
-        url: "/warehouse/inventory",
-      },
-      {
-        title: "Category",
-        url: "/warehouse/inventory/category",
-      },
-    ],
-  },
-  {
-    title: "Orders",
-    url: "/warehouse/orders",
-    icon: ClipboardList,
-    sub_items: [],
-  },
-  {
-    title: "Payments",
-    url: "/warehouse/transaction",
-    icon: Wallet,
-    sub_items: [],
-  },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
-    sub_items: [
-      {
-        title: "History",
-        url: "/warehouse/settings/history",
-      },
-      {
-        title: "Advanced",
-        url: "/warehouse/settings/advanced",
-      },
-    ],
-  },
-];
+import { AppSidebarNav } from "./app-sidebar-nav";
 
 export async function AppSidebar() {
   const session = await auth();
@@ -104,47 +37,7 @@ export async function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
-              {items.map((item) => (
-                <div key={item.title}>
-                  {item.sub_items.length > 0 ? (
-                    <Collapsible asChild>
-                      <SidebarMenuItem>
-                        <CollapsibleTrigger asChild>
-                          <SidebarMenuButton tooltip={item.title}>
-                            {item.icon && <item.icon />}
-                            <span>{item.title}</span>
-                            <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                          </SidebarMenuButton>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent>
-                          <SidebarMenuSub>
-                            {item.sub_items?.map((subItem) => (
-                              <SidebarMenuSubItem key={subItem.title}>
-                                <SidebarMenuSubButton asChild>
-                                  <Link href={subItem.url}>
-                                    <span>{subItem.title}</span>
-                                  </Link>
-                                </SidebarMenuSubButton>
-                              </SidebarMenuSubItem>
-                            ))}
-                          </SidebarMenuSub>
-                        </CollapsibleContent>
-                      </SidebarMenuItem>
-                    </Collapsible>
-                  ) : (
-                    <SidebarMenuItem>
-                      <SidebarMenuButton asChild>
-                        <Link href={item.url}>
-                          <item.icon />
-                          <span>{item.title}</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  )}
-                </div>
-              ))}
-            </SidebarMenu>
+            <AppSidebarNav />
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>

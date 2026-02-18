@@ -1,6 +1,7 @@
 "use client";
 
 import { signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import {
   CreditCard,
   EllipsisVertical,
@@ -36,6 +37,7 @@ export function AppUser({
   };
 }) {
   const { isMobile } = useSidebar();
+  const router = useRouter();
 
   return (
     <SidebarMenu>
@@ -81,15 +83,15 @@ export function AppUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push("/warehouse/account")}>
                 <CircleUserRound />
                 Account
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push("/warehouse/billing")}>
                 <CreditCard />
                 Billing
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push("/warehouse/notifications")}>
                 <BellDot />
                 Notifications
               </DropdownMenuItem>
