@@ -2,17 +2,30 @@
 
 import { useState, useEffect, Suspense } from "react";
 import axios from "axios";
+import { useSession } from "next-auth/react";
 import { AppHeader } from "@/components/layouts/app-header";
-import { columns } from "./columns";
+import { getColumns, type Payment } from "./columns";
 import { DataTable } from "./data-table";
-import { Sheet, Plus } from "lucide-react";
+import { Sheet, Plus, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { SectionCards } from "./section-cards";
 import { AddTransactionDialog } from "@/components/transactions/add-transaction-dialog";
+import { EditTransactionDialog } from "@/components/transactions/edit-transaction-dialog";
 
 export default function Transaction() {
+  const { data: session } = useSession();
   const [transactions, setTransactions] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
+  const [editingPayment, setEditingPayment] = useState<Payment | null>(null);
+  const [deletingPayment, setDeletingPayment] = useState<Payment | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const getTransaction = async () => {
     await axios
@@ -31,6 +44,33 @@ export default function Transaction() {
   useEffect(() => {
     getTransaction();
   }, []);
+
+  const handleDeleteConfirm = async () => {
+    if (!deletingPayment) return;
+    setIsDeleting(true);
+    try {
+      await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/transaction/${deletingPayment._id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${session?.accessToken}`,
+          },
+        }
+      );
+      setDeletingPayment(null);
+      getTransaction();
+    } catch (error) {
+      console.log("Delete transaction fail : ", error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const tableColumns = getColumns(
+    (payment) => setEditingPayment(payment),
+    (payment) => setDeletingPayment(payment)
+  );
 
   return (
     <div>
@@ -55,9 +95,53 @@ export default function Transaction() {
           onOpenChange={setOpenDialog}
           onSuccess={getTransaction}
         />
+        <EditTransactionDialog
+          open={!!editingPayment}
+          onOpenChange={(open) => { if (!open) setEditingPayment(null); }}
+          payment={editingPayment}
+          onSuccess={getTransaction}
+        />
+        <Dialog
+          open={!!deletingPayment}
+          onOpenChange={(open) => { if (!open) setDeletingPayment(null); }}
+        >
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Delete Transaction</DialogTitle>
+              <DialogDescription>
+                Are you sure you want to delete transaction for{" "}
+                <span className="font-semibold">{deletingPayment?.email}</span>?
+                This action cannot be undone.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex justify-end gap-2 pt-2">
+              <Button
+                variant="outline"
+                onClick={() => setDeletingPayment(null)}
+                disabled={isDeleting}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={handleDeleteConfirm}
+                disabled={isDeleting}
+              >
+                {isDeleting ? (
+                  <>
+                    <Loader2 className="mr-2 size-4 animate-spin" />
+                    Deleting...
+                  </>
+                ) : (
+                  "Delete"
+                )}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
 
         <Suspense fallback={<div>Loading...</div>}>
-          <DataTable columns={columns} data={transactions} />
+          <DataTable columns={tableColumns} data={transactions} />
         </Suspense>
       </div>
     </div>

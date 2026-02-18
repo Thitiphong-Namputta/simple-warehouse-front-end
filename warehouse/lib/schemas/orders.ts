@@ -27,4 +27,21 @@ export const createOrderSchema = z.object({
     .min(1, "Order must contain at least one item"),
 });
 
+export const editOrderSchema = z.object({
+  customer_name: z
+    .string()
+    .min(2, "Customer name must be at least 2 characters")
+    .max(100, "Customer name must be less than 100 characters")
+    .trim(),
+  status: z.enum([
+    "pending",
+    "confirmed",
+    "processing",
+    "shipped",
+    "delivered",
+    "cancelled",
+  ]),
+});
+
 export type CreateOrderInput = z.infer<typeof createOrderSchema>;
+export type EditOrderInput = z.infer<typeof editOrderSchema>;
